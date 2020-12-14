@@ -16,7 +16,7 @@ teachers = {
     "MALACRINO": "https://visio.intech-sud.fr/b/mar-wxx-xqn-2cp",
     "CAMBET PETIT JEAN": "https://visio.intech-sud.fr/b/car-t6h-80a-zro",
     "CERLO": "https://visio.intech-sud.fr/b/rem-mue-mix-2v7",
-    "MONTANARO": "https://visio.intech-sud.fr/b/mag-8pu-vyd-2ts",
+    "MONTANARO": "https://visio.intech-sud.fr/b/mar-t9l-3c5-bzg",
     "MALARD": "https://visio.intech-sud.fr/b/jul-m2n-vxs-ulx",
     "POIROT": "https://visio.intech-sud.fr/b/mat-ubw-pye-zyl",
     "CANINI": "https://visio.intech-sud.fr/b/rac-tdl-cnq-bhm"
@@ -44,8 +44,8 @@ def get_room_url(teacher):
 
 def connect_to_bbb(teacher_name=None):
     chrome_options = set_chrome_options()
-    browser = webdriver.Chrome(options=chrome_options)
-    # browser = webdriver.Firefox()
+    # browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Firefox()
 
     username = config('USERNAME')
     password = config('PASSWORD')
@@ -114,14 +114,21 @@ def connect_to_bbb(teacher_name=None):
 
     time.sleep(3)
 
-    browser.find_element_by_xpath(xpaths['listenButton']).click()
+    # If room is joined, connect to the audio
+    if str(browser.current_url)[28:39] == 'html5client':
+        try:
+            browser.find_element_by_xpath(xpaths['listenButton']).click()
+            print("Room successfully joined !")
+        except:
+            print("Session has not started yet...")
 
-    print("Room successfully joined !")
+    time.sleep(900)
 
 
 def run():
     current_teacher = None
-    today = datetime.now(pytz.utc)
+    # today = datetime.now(pytz.utc)
+    today = datetime(2020, 12, 14, 13, 25, 30)
     todayDay = str(today)[0:10]
     todayHour = str(today)[11:13]
 
@@ -146,8 +153,6 @@ def run():
                     else:
                         connect_to_bbb('CANINI')
     g.close()
-
-    time.sleep(900)
 
 
 if __name__ == '__main__':
