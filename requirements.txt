@@ -1,0 +1,6 @@
+inquirer~=2.7.0
+requests~=2.25.0
+python-decouple~=3.3
+icalendar~=4.0.7
+selenium~=3.141.0
+pytz~=2020.4
