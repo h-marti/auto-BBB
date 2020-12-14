@@ -16,7 +16,7 @@ teachers = {
     "MALACRINO": "https://visio.intech-sud.fr/b/mar-wxx-xqn-2cp",
     "CAMBET PETIT JEAN": "https://visio.intech-sud.fr/b/car-t6h-80a-zro",
     "CERLO": "https://visio.intech-sud.fr/b/rem-mue-mix-2v7",
-    "MONTANARO": "https://visio.intech-sud.fr/b/mar-t9l-3c5-bzg",
+    "MONTANARO": "https://visio.intech-sud.fr/b/mag-8pu-vyd-2ts",
     "MALARD": "https://visio.intech-sud.fr/b/jul-m2n-vxs-ulx",
     "POIROT": "https://visio.intech-sud.fr/b/mat-ubw-pye-zyl",
     "CANINI": "https://visio.intech-sud.fr/b/rac-tdl-cnq-bhm"
@@ -44,8 +44,8 @@ def get_room_url(teacher):
 
 def connect_to_bbb(teacher_name=None):
     chrome_options = set_chrome_options()
-    # browser = webdriver.Chrome(options=chrome_options)
-    browser = webdriver.Firefox()
+    browser = webdriver.Chrome(options=chrome_options)
+    # browser = webdriver.Firefox()
 
     username = config('USERNAME')
     password = config('PASSWORD')
@@ -127,8 +127,8 @@ def connect_to_bbb(teacher_name=None):
 
 def run():
     current_teacher = None
-    # today = datetime.now(pytz.utc)
-    today = datetime(2020, 12, 14, 13, 25, 30)
+    today = datetime.now(pytz.utc)
+    # today = datetime(2020, 12, 14, 13, 25, 30)
     todayDay = str(today)[0:10]
     todayHour = str(today)[11:13]
 
