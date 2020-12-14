@@ -1,0 +1,5 @@
+venv
+calendar.ics
+geckodriver.log
+.env
+.idea
