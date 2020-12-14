@@ -19,7 +19,7 @@ teachers = {
     "MONTANARO": "https://visio.intech-sud.fr/b/mag-8pu-vyd-2ts",
     "MALARD": "https://visio.intech-sud.fr/b/jul-m2n-vxs-ulx",
     "POIROT": "https://visio.intech-sud.fr/b/mat-ubw-pye-zyl",
-    "CANINI": "https://visio.intech-sud.fr/b/rac-9k8-fde-zdu"
+    "CANINI": "https://visio.intech-sud.fr/b/rac-tdl-cnq-bhm"
 }
 
 
@@ -55,12 +55,13 @@ def connect_to_bbb(teacher_name=None):
 
     xpaths = {'emailTxtBox': "//input[@name='loginfmt']",
               'passwordTxtBox': "//input[@name='passwd']",
-              'NextButton': "//input[@id='idSIButton9' and @value='Next']",
-              'SigninButton': "//input[@id='idSIButton9' and @value='Sign in']",
-              'YesButton': "//input[@id='idSIButton9' and @value='Yes']",
+              'nextButton': "//input[@id='idSIButton9' and @value='Next']",
+              'signinButton': "//input[@id='idSIButton9' and @value='Sign in']",
+              'yesButton': "//input[@id='idSIButton9' and @value='Yes']",
               'roomTxtBox': "//input[@id='join_room_url']",
               'goToRoomButton': "//input[@name='commit']",
               'joinButton': "//button[@id='room-join']",
+              'listenButton': "//i[@class='icon--2q1XXw icon-bbb-listen']"
               }
 
     while browser.current_url != roomUrl:
@@ -77,7 +78,7 @@ def connect_to_bbb(teacher_name=None):
             browser.find_element_by_xpath(xpaths['emailTxtBox']).send_keys(username)
 
             # Click Next button
-            browser.find_element_by_xpath(xpaths['NextButton']).click()
+            browser.find_element_by_xpath(xpaths['nextButton']).click()
 
             # Clear Password TextBox if already allowed "Remember Me"
             browser.find_element_by_xpath(xpaths['passwordTxtBox']).clear()
@@ -88,9 +89,10 @@ def connect_to_bbb(teacher_name=None):
             time.sleep(2)
 
             # Click SignIn button
-            browser.find_element_by_xpath(xpaths['SigninButton']).click()
+            browser.find_element_by_xpath(xpaths['signinButton']).click()
 
-            browser.find_element_by_xpath(xpaths['YesButton']).click()
+            browser.find_element_by_xpath(xpaths['yesButton']).click()
+
         except:
             time.sleep(1)
 
@@ -109,6 +111,12 @@ def connect_to_bbb(teacher_name=None):
     browser.find_element_by_xpath(xpaths['joinButton']).click()
 
     print("Joining the session...")
+
+    time.sleep(3)
+
+    browser.find_element_by_xpath(xpaths['listenButton']).click()
+
+    print("Room successfully joined !")
 
 
 def run():
@@ -129,7 +137,7 @@ def run():
             endHour = str(end)[11:13]
             summary = str(component.decoded('summary'))
             if startDay == todayDay:
-                if (int(startHour) - 1) <= int(todayHour) < int(endHour):
+                if (int(startHour) - 1) <= int(todayHour) <= int(endHour):
                     for teacher in teachers:
                         if summary.__contains__(teacher):
                             current_teacher = teacher
@@ -137,9 +145,9 @@ def run():
                         connect_to_bbb(current_teacher)
                     else:
                         connect_to_bbb('CANINI')
-            else:
-                print('No course registered for today')
     g.close()
+
+    time.sleep(900)
 
 
 if __name__ == '__main__':
