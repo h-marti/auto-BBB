@@ -27,25 +27,29 @@ jobs:
       - uses: actions/checkout@v2
         name: 🗂 Check out code
       
+      # Set env params
       - run: echo USERNAME=$USERNAME >> .env
       - run: echo PASSWORD=$PASSWORD >> .env
 
+      # Install requirements and download calendar
       - uses: actions/setup-python@v1
       - uses: BSFishy/pip-action@v1
         with:
           requirements: requirements.txt
       - run: python init.py
         
+      # Login into GithubPackages  
       - name: 🔓 Auth GithubPackages
         run: echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u $DOCKER_USER --password-stdin
 
-      # Client package
-      - name: 🏗 Build the client Docker image
+      # Package
+      - name: 🏗 Build the Docker image
         run: docker build -t $REPOSITORY .
 
-      - name: 🏷 Tag the client Docker image
+      - name: 🏷 Tag the Docker image
         run: |
           docker tag $REPOSITORY:latest $REPOSITORY:latest
-      - name: 🚀 Push client Docker image to Github package registry
+          
+      - name: 🚀 Push Docker image to Github package registry
         run: |
           docker push $REPOSITORY:latest
