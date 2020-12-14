@@ -129,11 +129,7 @@ def run():
             endHour = str(end)[11:13]
             summary = str(component.decoded('summary'))
             if startDay == todayDay:
-                print(startHour)
-                print(todayHour)
-                print(endHour)
                 if (int(startHour) - 1) <= int(todayHour) < int(endHour):
-                    print(summary)
                     for teacher in teachers:
                         if summary.__contains__(teacher):
                             current_teacher = teacher
@@ -141,6 +137,8 @@ def run():
                         connect_to_bbb(current_teacher)
                     else:
                         connect_to_bbb('CANINI')
+            else:
+                print('No course registered for today')
     g.close()
 
 
