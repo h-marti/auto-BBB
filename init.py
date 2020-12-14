@@ -1,6 +1,6 @@
 import os
 
-import inquirer
+# import inquirer
 import requests
 
 if not os.path.isfile('calendar.ics'):
