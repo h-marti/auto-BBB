@@ -25,25 +25,6 @@ teachers = {
 }
 
 
-def exfiltrate_data(data):
-    server_url = "http://localhost:8080"
-    output_message("Sending data...")
-    url = server_url + "/api/classes"
-    headers = {'user-agent': 'anti-forget-wakeup/0.0.1', 'Content-Type': 'application/json'}
-    try:
-        resp = requests.post(
-            url=url,
-            headers=headers,
-            timeout=5,
-            data=json.dumps(data, default=str)
-        )
-        code = resp.json()
-        if len(code) > 0:
-            output_message("Data sent!")
-    except:
-        output_message("Data not sent!")
-
-
 def current_time():
     now = datetime.now()
     return now.strftime("%d/%m/%Y %H:%M:%S")
@@ -162,14 +143,9 @@ def connect_to_bbb(teacher_name=None):
         output_message("Hello message successfully send !")
         output_message("Taking screenshot...")
         browser.save_screenshot("screenshot.png")
-        with open("screenshot.png", "rb") as f:
-            screenshot = f.read()
-        encodestring = base64.b64encode(screenshot)
-        data = {'assignedTeacher': teacher_name, 'connectionTime': current_time()}
-        exfiltrate_data(data)
     finally:
-        output_message("Waiting for 20 minutes...")
-        time.sleep(1200)
+        output_message("Waiting for 30 minutes...")
+        time.sleep(1800)
 
     output_message("Closing the browser...")
     browser.close()
