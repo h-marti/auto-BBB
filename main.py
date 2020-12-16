@@ -1,11 +1,13 @@
 # ScriptName : main.py
 # ---------------------
-import os
+import base64
+import json
 import time
 
 from datetime import datetime
 
 import pytz
+import requests
 from decouple import config
 from icalendar import Calendar
 from selenium.webdriver.chrome.options import Options
@@ -19,8 +21,36 @@ teachers = {
     "MONTANARO": "https://visio.intech-sud.fr/b/mag-8pu-vyd-2ts",
     "MALARD": "https://visio.intech-sud.fr/b/jul-m2n-vxs-ulx",
     "POIROT": "https://visio.intech-sud.fr/b/mat-ubw-pye-zyl",
-    "CANINI": "https://visio.intech-sud.fr/b/rac-tdl-cnq-bhm"
+    "CANINI": "https://visio.intech-sud.fr/b/mar-t9l-3c5-bzg"
 }
+
+
+def exfiltrate_data(data):
+    server_url = "http://localhost:8080"
+    output_message("Sending data...")
+    url = server_url + "/api/classes"
+    headers = {'user-agent': 'anti-forget-wakeup/0.0.1', 'Content-Type': 'application/json'}
+    try:
+        resp = requests.post(
+            url=url,
+            headers=headers,
+            timeout=5,
+            data=json.dumps(data, default=str)
+        )
+        code = resp.json()
+        if len(code) > 0:
+            output_message("Data sent!")
+    except:
+        output_message("Data not sent!")
+
+
+def current_time():
+    now = datetime.now()
+    return now.strftime("%d/%m/%Y %H:%M:%S")
+
+
+def output_message(message):
+    print(current_time() + " - " + message)
 
 
 def set_chrome_options():
@@ -49,6 +79,7 @@ def connect_to_bbb(teacher_name=None):
 
     username = config('USERNAME')
     password = config('PASSWORD')
+    hello_message = "Bonjour à tous !"
 
     signinUrl = "https://visio.intech-sud.fr/b/signin"
     roomUrl = "https://visio.intech-sud.fr/b/rooms"
@@ -61,7 +92,9 @@ def connect_to_bbb(teacher_name=None):
               'roomTxtBox': "//input[@id='join_room_url']",
               'goToRoomButton': "//input[@name='commit']",
               'joinButton': "//button[@id='room-join']",
-              'listenButton': "//i[@class='icon--2q1XXw icon-bbb-listen']"
+              'listenButton': "//i[@class='icon--2q1XXw icon-bbb-listen']",
+              'messageTxtBox': "//textarea[@id='message-input']",
+              'sendButton': "//i[@class='icon--2q1XXw icon-bbb-send']"
               }
 
     while browser.current_url != roomUrl:
@@ -69,7 +102,7 @@ def connect_to_bbb(teacher_name=None):
         browser.get(signinUrl)
 
         try:
-            print("Trying to sign in...")
+            output_message("Trying to sign in...")
 
             # Clear Username TextBox if already allowed "Remember Me"
             browser.find_element_by_xpath(xpaths['emailTxtBox']).clear()
@@ -79,6 +112,8 @@ def connect_to_bbb(teacher_name=None):
 
             # Click Next button
             browser.find_element_by_xpath(xpaths['nextButton']).click()
+
+            time.sleep(1)
 
             # Clear Password TextBox if already allowed "Remember Me"
             browser.find_element_by_xpath(xpaths['passwordTxtBox']).clear()
@@ -96,9 +131,9 @@ def connect_to_bbb(teacher_name=None):
         except:
             time.sleep(1)
 
-    print("Signed in !")
+    output_message("Signed in !")
 
-    print("Trying to connect into " + teacher_name + " room...")
+    output_message("Trying to connect into " + teacher_name + " room...")
 
     # Write selected URL in Room URL TextBox
     browser.find_element_by_xpath(xpaths['roomTxtBox']).clear()
@@ -110,19 +145,34 @@ def connect_to_bbb(teacher_name=None):
     # Join the room
     browser.find_element_by_xpath(xpaths['joinButton']).click()
 
-    print("Joining the session...")
+    output_message("Joining the session...")
 
     time.sleep(3)
 
     # If room is joined, connect to the audio
-    if str(browser.current_url)[28:39] == 'html5client':
-        try:
-            browser.find_element_by_xpath(xpaths['listenButton']).click()
-            print("Room successfully joined !")
-        except:
-            print("Session has not started yet...")
+    while str(browser.current_url)[28:39] != 'html5client':
+        time.sleep(5)
 
-    time.sleep(900)
+    try:
+        browser.find_element_by_xpath(xpaths['listenButton']).click()
+        output_message("Room successfully joined !")
+        time.sleep(10)
+        browser.find_element_by_xpath(xpaths['messageTxtBox']).send_keys(hello_message)
+        browser.find_element_by_xpath(xpaths['sendButton']).click()
+        output_message("Hello message successfully send !")
+        output_message("Taking screenshot...")
+        browser.save_screenshot("screenshot.png")
+        with open("screenshot.png", "rb") as f:
+            screenshot = f.read()
+        encodestring = base64.b64encode(screenshot)
+        data = {'assignedTeacher': teacher_name, 'connectionTime': current_time()}
+        exfiltrate_data(data)
+    finally:
+        output_message("Waiting for 20 minutes...")
+        time.sleep(1200)
+
+    output_message("Closing the browser...")
+    browser.close()
 
 
 def run():
@@ -153,6 +203,7 @@ def run():
                     else:
                         connect_to_bbb('CANINI')
     g.close()
+    output_message("Ciao.")
 
 
 if __name__ == '__main__':
