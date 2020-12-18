@@ -21,7 +21,7 @@ teachers = {
     "MONTANARO": "https://visio.intech-sud.fr/b/mag-8pu-vyd-2ts",
     "MALARD": "https://visio.intech-sud.fr/b/jul-m2n-vxs-ulx",
     "POIROT": "https://visio.intech-sud.fr/b/mat-ubw-pye-zyl",
-    "CANINI": "https://visio.intech-sud.fr/b/mar-t9l-3c5-bzg"
+    "CANINI": "https://visio.intech-sud.fr/b/rac-tdl-cnq-bhm"
 }
 
 
